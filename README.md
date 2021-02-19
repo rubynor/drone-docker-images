@@ -1,6 +1,8 @@
 # Drone CI docker images for project runtimes
 
-These aren't images for docker, they are runtimes for the projects to be run by drone. Different Rails projects might need different Ruby version, node version and postgresql
+These aren't images for running drone, but for running project builds on drone.
+
+Different Rails projects might need different Ruby version, node version and postgresql. 
 
 ## Recipe
 
