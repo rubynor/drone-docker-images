@@ -35,18 +35,20 @@ Here's an example .drone.yml for a Rails app
       - name: build
         image: oleamundsen/drone-ci-rails-env-images:2.6.3-node10-postgres
         commands:
-          - sudo -E yarn install
-          - sudo rm config/database.yml
-          - sudo mv config/ci-database.yml config/database.yml
-          - sudo gem install bundler:2.1.4
-          - sudo -E bundle install --path /bundle --without production,development
-          - sudo -E bundle exec rails parallel:create RAILS_ENV=test
-          - sudo -E bundle exec rails db:migrate RAILS_ENV=test
-          - sudo -E bundle exec rails parallel:prepare RAILS_ENV=test
-          - sudo -E bundle exec rails parallel:spec RAILS_ENV=test
+          - yarn install
+          - gem install bundler:2.1.4
+          - bundle install --path /bundle --without production,development
+          - rm config/database.yml
+          - mv config/ci-database.yml config/database.yml
+          - bundle exec rails parallel:create RAILS_ENV=test
+          - bundle exec rails db:migrate RAILS_ENV=test
+          - bundle exec rails parallel:prepare RAILS_ENV=test
+          - bundle exec rails parallel:spec RAILS_ENV=test
         volumes:
           - name: gem-cache
             path: /bundle
+          - name: node_modules-cache
+            path: /drone/src/node_modules
           - name: tmp
             path: /drone/src/tmp
         environment:
@@ -62,10 +64,22 @@ Here's an example .drone.yml for a Rails app
         environment:
           POSTGRES_USER: postgres
           POSTGRES_PASSWORD: postgres
+      - name: chrome
+        image: selenium/standalone-chrome-debug
+        logging:
+          driver: none
+        shm_size: 1024000000
+        environment:
+          xpack.security.enabled: false
+          discovery.type: single-node
 
     volumes:
       - name: gem-cache
         host:
           path: /tmp/cache
+      - name: node_modules-cache
+        host:
+          path: /tmp/node_modules-cache
       - name: tmp
         temp: {}
+
