@@ -1,2 +1,65 @@
-# drone-docker-images
-docker files for running drone ci for our awesome projects
+# Drone CI docker images for project runtimes
+
+These aren't images for docker, they are runtimes for the projects to be run by drone. Different Rails projects might need different Ruby version, node version and postgresql
+
+## Recipe
+
+Clone this repo and navigate to it in terminal
+
+Register for account on hub.docker.com
+
+locally, run
+
+    docker login
+   
+Build the images you want to build, eg.
+
+    docker build -t YOURDOCKERHUBUSERNAME/ruby-2.6.3-node10 -f ruby2.6.3-node10-postgres.dockerfile .   
+    docker push YOURDOCKERHUBUSERNAME/ruby-2.6.3-node10
+
+In your project .drone.yml link to it
+
+Here's an example .drone.yml for a Rails app
+
+    kind: pipeline
+    type: docker
+    name: default
+
+    steps:
+      - name: build
+        image: oleamundsen/ruby:2.6.3-node10
+        commands:
+          - sudo -E yarn install
+          - sudo rm config/database.yml
+          - sudo mv config/ci-database.yml config/database.yml
+          - sudo gem install bundler:2.1.4
+          - sudo -E bundle install --path /bundle --without production,development
+          - sudo -E bundle exec rails parallel:create RAILS_ENV=test
+          - sudo -E bundle exec rails db:migrate RAILS_ENV=test
+          - sudo -E bundle exec rails parallel:prepare RAILS_ENV=test
+          - sudo -E bundle exec rails parallel:spec RAILS_ENV=test
+        volumes:
+          - name: gem-cache
+            path: /bundle
+          - name: tmp
+            path: /drone/src/tmp
+        environment:
+          RAILS_ENV: test
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+          DATABASE_HOST: database
+          PARALLEL_TEST_PROCESSORS: 15
+
+    services:
+      - name: database
+        image: str1fe/postgres_nor
+        environment:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+
+    volumes:
+      - name: gem-cache
+        host:
+          path: /tmp/cache
+      - name: tmp
+        temp: {}
