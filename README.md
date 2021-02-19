@@ -12,7 +12,7 @@ locally, run
 
     docker login
    
-Build the images you want to build
+Build the images you want to build (images in this repo for example)
 
     docker build -t YOURDOCKERHUBUSERNAME/YOURREPO:TAG -f a_dockerfile .   
     docker push YOURDOCKERHUBUSERNAME/YOURREPO:TAG
