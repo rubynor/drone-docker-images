@@ -12,10 +12,14 @@ locally, run
 
     docker login
    
-Build the images you want to build, eg.
+Build the images you want to build
 
-    docker build -t YOURDOCKERHUBUSERNAME/ruby-2.6.3-node10 -f ruby2.6.3-node10-postgres.dockerfile .   
-    docker push YOURDOCKERHUBUSERNAME/ruby-2.6.3-node10
+    docker build -t YOURDOCKERHUBUSERNAME/YOURREPO:TAG -f a_dockerfile .   
+    docker push YOURDOCKERHUBUSERNAME/YOURREPO:TAG
+
+    # e.g:
+    docker build -t oleamundsen/drone-ci-rails-env-images:2.6.3-node10-postgres -f ruby2.6.3-node10-postgres.dockerfile .
+    docker push oleamundsen/drone-ci-rails-env-images:2.6.3-node10-postgres
 
 In your project .drone.yml link to it
 
@@ -27,7 +31,7 @@ Here's an example .drone.yml for a Rails app
 
     steps:
       - name: build
-        image: oleamundsen/ruby:2.6.3-node10
+        image: oleamundsen/drone-ci-rails-env-images:2.6.3-node10-postgres
         commands:
           - sudo -E yarn install
           - sudo rm config/database.yml
