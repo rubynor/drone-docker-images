@@ -99,7 +99,7 @@ Here's an example .drone.yml for a Rails app
         temp: {}
 
 
-### Example .rspec_parallel_ci
+### Example .rspec_parallel_ci using runtime logger to distribute the specs on threads
 
 This is copied to .rspec_parallel in the setup. The parallel runtime logs are put in keep/ instead of default tmp volume as that's cleaned out for each run.
 
