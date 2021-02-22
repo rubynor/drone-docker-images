@@ -17,4 +17,5 @@ RUN apt-get update -yqq && apt-get install -yqq --no-install-recommends \
   postgresql-common \
   postgresql-client \
   nodejs \
-  yarn
+  yarn \
+  pgtop
